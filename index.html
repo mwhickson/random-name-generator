@@ -3,9 +3,99 @@
 <head>
 	<meta charset="utf-8">
 	<title>Name Generator</title>
+
+	<style>
+	body {
+		font-family: sans-serif, serif;
+	}
+
+	.page {
+		margin: 0 auto;
+		max-width: 800px;
+		width: 100%;
+	}	
+
+	.page h1 {
+		text-align: center;
+	}
+
+	.options {
+		display: flex;
+		padding: 20px 10px;
+		padding-top: 0;
+	}
+
+	.options label {
+		flex: 1;
+	}
+
+	#names ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	#names li {
+		padding: 5px 10px;
+	}
+
+	#names li:nth-child(odd) {
+		background-color: #e5e5e5;	
+	}
+	</style>
 </head>
 <body>
-
+	<div class="page">
+		<h1>Random Name Generator</h1>
+		<div class="options">
+			<label>
+				Starts with:
+				<select>
+					<option value="?">random</option>
+					<option value="a">A</option>
+					<option value="b">B</option>
+					<option value="c">C</option>
+					<option value="d">D</option>
+					<option value="e">E</option>
+					<option value="f">F</option>
+					<option value="g">G</option>
+					<option value="h">H</option>
+					<option value="i">I</option>
+					<option value="j">J</option>
+					<option value="k">K</option>
+					<option value="l">L</option>
+					<option value="m">M</option>
+					<option value="n">N</option>
+					<option value="o">O</option>
+					<option value="p">P</option>
+					<option value="q">Q</option>
+					<option value="r">R</option>
+					<option value="s">S</option>
+					<option value="t">T</option>
+					<option value="u">U</option>
+					<option value="v">V</option>
+					<option value="w">W</option>
+					<option value="x">X</option>
+					<option value="y">Y</option>
+					<option value="z">Z</option>
+				</select>
+			</label>
+			<label>
+				Minimum length:
+				<input id="MinimumLength" name="MinimumLength" type="number" min="3" max="47">
+			</label>
+			<label>
+				Maximum length:
+				<input id="MaximumLength" name="MaximumLength" type="number" min="5" max="50">
+			</label>
+			<label>
+				Count:
+				<input id="Count" name="Count" type="number" min="1" max="500">
+			</label>
+		</div>
+		<div id="names"></div>
+	</div>
+	
 	<script src="namegen.js"></script>
 </body>
 </html>

@@ -1,0 +1,2 @@
+#! /usr/bin/sh
+fpc ./src/namegen.pas -FE"./build" -onamegen

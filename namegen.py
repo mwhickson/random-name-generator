@@ -7,6 +7,8 @@
 import os
 import random
 
+DEBUG = False
+
 DefaultNameDataFile: str = "./data/names.txt"
 
 class MarkovNode:
@@ -34,7 +36,7 @@ class NameGenerator:
 
 	@staticmethod
 	def get_name(markov_data: dict[str, MarkovNode], starts_with: str, minimum_length: int, maximum_length: int) -> str:
-		name = ""
+		name: str = ""
 		name_length = random.randint(minimum_length, maximum_length)
 
 		if len(starts_with) > 0 and ord(starts_with[0].lower()) in range(ord("a"), ord("z")):
@@ -43,7 +45,7 @@ class NameGenerator:
 			keys = list(markov_data.keys())
 			name = random.choice(keys)
 
-		while len(name) <=  name_length:
+		while len(name) <= name_length:
 			exits = list(markov_data[name[-1:]].exits)
 			next_character = random.choice(exits)
 			name = name + next_character
@@ -63,14 +65,13 @@ class NameGenerator:
 			name = NameGenerator.get_name(markov_data, starts_with, minimum_length, maximum_length)
 			result.append(name)
 
+		result.sort()
+
 		return result
 
 	@staticmethod
 	def markovize_name_segments(name_segment_array: list[str]) -> dict[str, MarkovNode]:
 		result: dict[str, MarkovNode] = {}
-
-		# for i in range(ord("a"), ord("z")):
-		# 	result[chr(i)] = MarkovNode(chr(i))
 
 		for segment in name_segment_array:
 			if len(segment) > 1:
@@ -89,13 +90,27 @@ class NameGenerator:
 				else:
 					result[current_char].exits[next_char].count = result[current_char].exits[next_char].count + 1
 
+		if DEBUG:
+			NameGenerator._dump_markov_data(result)
+
 		return result
+
+	@staticmethod
+	def _dump_markov_data(data: dict[str, MarkovNode]):
+		print("-----")
+		for k in data:
+			node = data[k]
+			print(k, node.text, node.count)
+			for k2 in node.exits:
+				node2 = node.exits[k2]
+				print("\t", node2.text, node2.count)
+		print("-----")
 
 if __name__ == "__main__":
 	print("*** Random Name Generator ***")
 
 	data = NameGenerator.get_name_data(DefaultNameDataFile)
-	names = NameGenerator.get_names(data, "?", 3, 10, 1)
+	names = NameGenerator.get_names(data, "?", 3, 10, 10)
+#	names = NameGenerator.get_names(data, "f", 3, 10, 10)
 
-	# print(data) # DEBUG:
 	print(names)

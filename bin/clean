@@ -1,2 +1,0 @@
-#! /usr/bin/sh
-rm -f ./build/*

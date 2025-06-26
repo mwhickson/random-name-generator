@@ -7,7 +7,7 @@
 import os
 import random
 
-DEBUG = False
+DEBUG = True
 
 DefaultNameDataFile: str = "./data/names.txt"
 
@@ -16,6 +16,12 @@ class MarkovNode:
 	def __init__(self, text: str, count: int = 0):
 		self.text: str = text
 		self.count: int = count
+
+
+class MarkovRootNode(MarkovNode):
+
+	def __init__(self, text: str, count: int = 0):
+		super().__init__(text, count)
 		self.exits: dict[str, MarkovNode] = {}
 
 
@@ -35,7 +41,7 @@ class NameGenerator:
 			return []
 
 	@staticmethod
-	def get_name(markov_data: dict[str, MarkovNode], starts_with: str, minimum_length: int, maximum_length: int) -> str:
+	def get_name(markov_data: dict[str, MarkovRootNode], starts_with: str, minimum_length: int, maximum_length: int) -> str:
 		name: str = ""
 		name_length = random.randint(minimum_length, maximum_length)
 
@@ -70,25 +76,32 @@ class NameGenerator:
 		return result
 
 	@staticmethod
-	def markovize_name_segments(name_segment_array: list[str]) -> dict[str, MarkovNode]:
-		result: dict[str, MarkovNode] = {}
+	def markovize_name_segments(name_segment_array: list[str]) -> dict[str, MarkovRootNode]:
+		result: dict[str, MarkovRootNode] = {}
 
+		max_segment_length = 0
 		for segment in name_segment_array:
-			if len(segment) > 1:
-				current_char = segment[0].lower()
-				next_char = segment[1].lower()
+			if len(segment) > max_segment_length:
+				max_segment_length = len(segment)
 
-				if current_char not in result:
-					result[current_char] = MarkovNode(current_char)
-				else:
-					result[current_char].count = result[current_char].count + 1
+		if max_segment_length > 1:
+			for i in range(1, max_segment_length):
+				for segment in name_segment_array:
+					if len(segment) > i:
+						current_char = segment[i - 1].lower()
+						next_char = segment[i].lower()
 
-				if next_char not in result[current_char].exits:
-					exit_node = MarkovNode(next_char)
-					exit_node.count = 1
-					result[current_char].exits[next_char] = exit_node
-				else:
-					result[current_char].exits[next_char].count = result[current_char].exits[next_char].count + 1
+						if current_char not in result:
+							result[current_char] = MarkovRootNode(current_char)
+						else:
+							result[current_char].count = result[current_char].count + 1
+
+						if next_char not in result[current_char].exits:
+							exit_node = MarkovNode(next_char)
+							exit_node.count = 1
+							result[current_char].exits[next_char] = exit_node
+						else:
+							result[current_char].exits[next_char].count = result[current_char].exits[next_char].count + 1
 
 		if DEBUG:
 			NameGenerator._dump_markov_data(result)
@@ -96,7 +109,7 @@ class NameGenerator:
 		return result
 
 	@staticmethod
-	def _dump_markov_data(data: dict[str, MarkovNode]):
+	def _dump_markov_data(data: dict[str, MarkovRootNode]):
 		print("-----")
 		for k in data:
 			node = data[k]
